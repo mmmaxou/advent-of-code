@@ -7,5 +7,11 @@
 	"settings": {
 		"python.terminal.activateEnvironment": true,
 		"python.pythonPath": ".\\Scripts\\python.exe",
+		"python.linting.pylintPath": ".\\Scripts\\pylint.exe",
+		"python.linting.pylintArgs": [],
+		"python.linting.pycodestylePath": ".\\Scripts\\pep8.exe",
+		"python.linting.pycodestyleArgs": [
+			"--ignore=E402,E501,W503,E701"
+		],
 	},
 }
