@@ -1,0 +1,11 @@
+# Standard
+Include/
+Lib/
+Scripts/
+temp/
+.vscode/
+todo.md
+*.log
+.pytest_cache
+
+# Specific
