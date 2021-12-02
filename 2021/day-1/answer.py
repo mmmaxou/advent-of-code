@@ -8,12 +8,11 @@ with open(inputPath, "r") as inputFile:
 
 def answer(iterable, slidingWindow):
     count = 0
-    for i in range(len(iterable) - slidingWindow + 1):
-        if i > 0:
-            current = sum(iterable[i: i + slidingWindow])
-            before = sum(iterable[i - 1: i - 1 + slidingWindow])
-            if current > before:
-                count += 1
+    for i in range(1, len(iterable) - slidingWindow + 1):
+        current = sum(iterable[i: i + slidingWindow])
+        before = sum(iterable[i - 1: i - 1 + slidingWindow])
+        if current > before:
+            count += 1
     return count
 
 
