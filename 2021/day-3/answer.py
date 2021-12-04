@@ -25,12 +25,8 @@ def answer1(inp):
     gammaBit = ""
     for row in transposedInput:
         count = collections.Counter(row)
-        if count["0"] > count["1"]:
-            epsilonBit += "1"
-            gammaBit += "0"
-        else:
-            epsilonBit += "0"
-            gammaBit += "1"
+        epsilonBit += str(int(count["0"] >= count["1"]))
+        gammaBit += str(int(count["0"] < count["1"]))
 
     epsilon = int(epsilonBit, 2)
     gamma = int(gammaBit, 2)
