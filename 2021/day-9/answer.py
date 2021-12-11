@@ -27,13 +27,33 @@ class Point:
 
 class Map:
     def __init__(self, datas) -> None:
+        self.pointIterator = None
         self.map = self.fillMap(datas)
 
+    def __iter__(self):
+        return iter(self.pointIterator)
+
+    def __repr__(self) -> str:
+        return str("\n".join(["".join(map(str, line)) for line in self.map]))
+
+    def __len__(self) -> int:
+        return len(self.map[0]) * len(self.map)
+
+    __str__ = __repr__
+
     def fillMap(self, datas) -> None:
-        return [list(line) for line in datas]
+        newMap = [list(line) for line in datas]
+        self.pointIterator = []
+        for i in range(len(newMap)):
+            for j in range(len(newMap[0])):
+                self.pointIterator.append(Point(i, j))
+        return newMap
 
     def get(self, point) -> int:
         return int(self.map[point.y][point.x])
+
+    def edit(self, point, value) -> None:
+        self.map[point.y][point.x] = value
 
     def inMap(self, point) -> bool:
         if point.x < 0 or point.x >= len(self.map[0]) or point.y < 0 or point.y >= len(self.map):
