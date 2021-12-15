@@ -5,17 +5,24 @@ class Point:
     def __init__(self, x, y) -> None:
         self.x = x
         self.y = y
+        self.tuple = (x, y)
 
     def __repr__(self) -> str:
         return "({x},{y})".format(x=self.x, y=self.y)
 
     __str__ = __repr__
 
-    def __eq__(self, __o: object) -> bool:
-        return __o.x == self.x and __o.y == self.y
+    def __eq__(self, other) -> bool:
+        return other.x == self.x and other.y == self.y
 
     def __hash__(self) -> int:
-        return int(str(self.x).zfill(10) + str(self.y).zfill(10), 10)
+        return hash(self.tuple)
+
+    def __iter__(self):
+        return iter(self.tuple)
+
+    def __lt__(self, other):
+        return (other.x + other.y) <= (self.x + self.y)
 
 
 class Map:
@@ -67,3 +74,29 @@ class Map:
                     allNeighbours.append(nPoint)
                     # print("coord=%s,%s ;val=%s" % (i, j, self.get(nPoint)))
         return allNeighbours
+
+
+class Grid:
+    def __init__(self, gridData) -> None:
+        self.map = gridData
+        self.max = Point(*map(max, zip(*self.map.keys())))
+
+    def neighbours(self, point, adjacency=4, wrap=False, stride=1):
+        allNeighbours = []
+        for i in range(-stride, stride + 1):
+            for j in range(-stride, stride + 1):
+                if i == 0 and j == 0:
+                    continue
+                if adjacency == 4 and (i != 0 and j != 0):
+                    continue
+                newPoint = Point(point.x + i, point.y + j)
+
+                if wrap:
+                    newPoint.x = newPoint.x % self.max.x
+                    newPoint.y = newPoint.y % self.max.y
+
+                if newPoint in self.map:
+                    allNeighbours.append(newPoint)
+
+        return allNeighbours
+
