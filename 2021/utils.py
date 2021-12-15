@@ -39,7 +39,7 @@ class Map:
         self.pointIterator = []
         for i in range(len(newMap)):
             for j in range(len(newMap[0])):
-                self.pointIterator.append(Point(i, j))
+                self.pointIterator.append(Point(j, i))
         return newMap
 
     def get(self, point) -> Any:
@@ -53,14 +53,14 @@ class Map:
             return False
         return True
 
-    def neighbours(self, point, adjacency=4, wrap=False) -> List[Point]:
+    def neighbours(self, point, adjacency=4, wrap=False, stride=1) -> List[Point]:
         allNeighbours = []
         # print("x=%s, y=%s, center=%s" % (point.x, point.y, self.get(point)))
-        for i in range(-1, 2):
-            for j in range(-1, 2):
+        for i in range(-stride, stride + 1):
+            for j in range(-stride, stride + 1):
                 if i == 0 and j == 0:
                     continue
-                if adjacency == 4 and abs(i) == abs(j):
+                if adjacency == 4 and (i != 0 and j != 0):
                     continue
                 nPoint = Point(point.x + i, point.y + j)
                 if wrap or self.inMap(nPoint):
