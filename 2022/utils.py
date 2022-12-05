@@ -100,3 +100,6 @@ class Grid:
 
         return allNeighbours
 
+
+def iterateNumberwise(iterable, n=2):
+    return zip(*[iter(iterable)] * n)
