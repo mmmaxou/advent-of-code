@@ -103,3 +103,8 @@ class Grid:
 
 def iterateNumberwise(iterable, n=2):
     return zip(*[iter(iterable)] * n)
+
+
+def iterateWithWindow(iterable, windowSize=2):
+    for i in range(len(iterable) - windowSize + 1):
+        yield iterable[i: i + windowSize]
