@@ -1,5 +1,5 @@
 from typing import List, Any
-
+from enum import Enum
 
 class Point:
     def __init__(self, x, y) -> None:
@@ -24,11 +24,26 @@ class Point:
     def __lt__(self, other):
         return (other.x + other.y) <= (self.x + self.y)
 
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+    
+    __radd__ = __add__
+
 
 class Map:
+
+    # Up Right Down Left
+    class DIRECTIONS_4_NAMES(Enum):
+        UP = 0
+        RIGHT = 1
+        DOWN = 2
+        LEFT = 3
+    DIRECTIONS_4 = [Point(0, -1), Point(-1, 0), Point(0, 1), Point(1, 0)]
+
     def __init__(self, datas) -> None:
-        self.pointIterator = None
-        self.map = self.fillMap(datas)
+        self.pointIterator: List[Point] = None
+        self.map: List[List[any]] = None
+        self.fillMap(datas)
 
     def __iter__(self):
         return iter(self.pointIterator)
@@ -42,12 +57,11 @@ class Map:
     __str__ = __repr__
 
     def fillMap(self, datas) -> None:
-        newMap = [list(line) for line in datas]
+        self.map = [list(line) for line in datas]
         self.pointIterator = []
-        for i in range(len(newMap)):
-            for j in range(len(newMap[0])):
+        for i in range(len(self.map)):
+            for j in range(len(self.map[0])):
                 self.pointIterator.append(Point(j, i))
-        return newMap
 
     def get(self, point) -> Any:
         return int(self.map[point.y][point.x])
@@ -74,6 +88,17 @@ class Map:
                     allNeighbours.append(nPoint)
                     # print("coord=%s,%s ;val=%s" % (i, j, self.get(nPoint)))
         return allNeighbours
+
+    def linesTowardEdges(self, point) -> List[List[Point]]:
+        """Return a list of list of points towards the edge of the map."""
+        surroundings = [[] for _ in range(4)]
+        for i, direction in enumerate(self.DIRECTIONS_4):
+            newPoint = point + direction
+            while self.inMap(newPoint):
+                surroundings[i].append(newPoint)
+                newPoint = newPoint + direction
+
+        return surroundings
 
 
 class Grid:

@@ -11,5 +11,6 @@
 		"python.linting.pycodestyleArgs": [
 			"--ignore=E402,E501,W503,E701"
 		],
+		"python.analysis.extraPaths": ["./2022/"]
 	},
 }
