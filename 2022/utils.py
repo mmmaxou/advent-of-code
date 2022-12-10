@@ -1,5 +1,7 @@
+from collections import defaultdict
 from typing import List, Any
 from enum import Enum
+
 
 class Point:
     def __init__(self, x, y) -> None:
@@ -26,7 +28,7 @@ class Point:
 
     def __add__(self, other):
         return Point(self.x + other.x, self.y + other.y)
-    
+
     __radd__ = __add__
 
 
@@ -34,11 +36,17 @@ class Map:
 
     # Up Right Down Left
     class DIRECTIONS_4_NAMES(Enum):
-        UP = 0
-        RIGHT = 1
-        DOWN = 2
-        LEFT = 3
-    DIRECTIONS_4 = [Point(0, -1), Point(-1, 0), Point(0, 1), Point(1, 0)]
+        UP = 0  # Haut
+        RIGHT = 1  # Droite
+        DOWN = 2  # Base
+        LEFT = 3  # Gauche
+
+    DIRECTIONS_4 = {
+        DIRECTIONS_4_NAMES.UP: Point(0, -1), 
+        DIRECTIONS_4_NAMES.RIGHT: Point(-1, 0), 
+        DIRECTIONS_4_NAMES.DOWN: Point(0, 1), 
+        DIRECTIONS_4_NAMES.LEFT: Point(1, 0)
+    }
 
     def __init__(self, datas) -> None:
         self.pointIterator: List[Point] = None
@@ -91,14 +99,43 @@ class Map:
 
     def linesTowardEdges(self, point) -> List[List[Point]]:
         """Return a list of list of points towards the edge of the map."""
-        surroundings = [[] for _ in range(4)]
-        for i, direction in enumerate(self.DIRECTIONS_4):
-            newPoint = point + direction
-            while self.inMap(newPoint):
-                surroundings[i].append(newPoint)
-                newPoint = newPoint + direction
-
+        surroundings = {}
+        for directionName in self.DIRECTIONS_4_NAMES:
+            direction = self.DIRECTIONS_4[directionName]
+            surroundings[directionName] = self.lineTowardEdge(point, direction)
         return surroundings
+
+    def lineTowardEdge(self, point, direction) -> List[Point]:
+        """Return a list of points towards the edge of the map."""
+        line = []
+        newPoint = point + direction
+        while self.inMap(newPoint):
+            line.append(newPoint)
+            newPoint = newPoint + direction
+        return line
+
+    def getPointsAtBorder(self, directionName) -> List[Point]:
+        """return a list of points at the border of the map.
+        It is the opposite of the direction.
+        I.E.:
+        Direction UP -> all points on bottom
+        Direction DOWN -> all points on top
+        ...
+        """
+        points = []
+        if directionName is self.DIRECTIONS_4_NAMES.UP:
+            for i in range(len(self.map[0])):
+                points.append(Point(i, len(self.map) - 1))
+        elif directionName is self.DIRECTIONS_4_NAMES.DOWN:
+            for i in range(len(self.map[0])):
+                points.append(Point(i, 0))
+        elif directionName is self.DIRECTIONS_4_NAMES.LEFT:
+            for i in range(len(self.map[0])):
+                points.append(Point(0, i))
+        elif directionName is self.DIRECTIONS_4_NAMES.RIGHT:
+            for i in range(len(self.map[0])):
+                points.append(Point(len(self.map[0]) - 1, i))
+        return points
 
 
 class Grid:
@@ -132,4 +169,4 @@ def iterateNumberwise(iterable, n=2):
 
 def iterateWithWindow(iterable, windowSize=2):
     for i in range(len(iterable) - windowSize + 1):
-        yield iterable[i: i + windowSize]
+        yield iterable[i : i + windowSize]
