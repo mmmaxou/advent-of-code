@@ -21,7 +21,7 @@ class CRT:
     pixels: List[str] = field(default_factory=lambda: [""])
 
     def drawPixel(self, register: int) -> None:
-        self.pixels[-1] += "#" if len(self.pixels[-1]) <= register + 1 and len(self.pixels[-1]) >= register - 1 else "."
+        self.pixels[-1] += "#" if abs(len(self.pixels[-1]) - register) <= 1 else "."
         if len(self.pixels[-1]) == 40:
             self.pixels.append("")
 
@@ -50,7 +50,7 @@ class CPU:
             self.crt.drawPixel(register)
 
             # Read is **during** the cycle, not after the cycle
-            if cycle == 20 or (cycle + 20) % 40 == 0:
+            if cycle % 40 == 20:
                 self.interestingSignals.append(Signal(register=register, cycle=cycle))
 
             if line.startswith("end "):
