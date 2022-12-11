@@ -1,4 +1,5 @@
 from collections import defaultdict
+import re
 from typing import List, Any
 from enum import Enum
 
@@ -29,6 +30,9 @@ class Point:
     def __add__(self, other):
         return Point(self.x + other.x, self.y + other.y)
 
+    def __sub__(self, other):
+        return Point(self.x - other.x, self.y - other.y)
+
     __radd__ = __add__
 
 
@@ -42,16 +46,17 @@ class Map:
         LEFT = 3  # Gauche
 
     DIRECTIONS_4 = {
-        DIRECTIONS_4_NAMES.UP: Point(0, -1), 
-        DIRECTIONS_4_NAMES.RIGHT: Point(-1, 0), 
-        DIRECTIONS_4_NAMES.DOWN: Point(0, 1), 
-        DIRECTIONS_4_NAMES.LEFT: Point(1, 0)
+        DIRECTIONS_4_NAMES.UP: Point(0, -1),
+        DIRECTIONS_4_NAMES.RIGHT: Point(-1, 0),
+        DIRECTIONS_4_NAMES.DOWN: Point(0, 1),
+        DIRECTIONS_4_NAMES.LEFT: Point(1, 0),
     }
 
     def __init__(self, datas) -> None:
         self.pointIterator: List[Point] = None
         self.map: List[List[any]] = None
         self.fillMap(datas)
+        self.dataType = int
 
     def __iter__(self):
         return iter(self.pointIterator)
@@ -72,7 +77,10 @@ class Map:
                 self.pointIterator.append(Point(j, i))
 
     def get(self, point) -> Any:
-        return int(self.map[point.y][point.x])
+        if self.dataType:
+            return self.dataType(self.map[point.y][point.x])
+        else:
+            return self.map[point.y][point.x]
 
     def edit(self, point, value) -> None:
         self.map[point.y][point.x] = value
@@ -137,6 +145,23 @@ class Map:
                 points.append(Point(len(self.map[0]) - 1, i))
         return points
 
+    def printMap(self, visiblePoints=None, reverse=False):
+        visiblePoints = visiblePoints or self.pointIterator
+        print("")
+        print("*" * len(self.map[0]))
+        line = ""
+        iterator = self.pointIterator[::-1] if reverse else self.pointIterator
+        for point in iterator:
+            if point in visiblePoints:
+                line = str(self.get(point)) + line
+            else:
+                line = "." + line
+            if len(line) == len(self.map[0]):
+                print(line)
+                line = ""
+        print("*" * len(self.map[0]))
+        print("")
+
 
 class Grid:
     def __init__(self, gridData) -> None:
@@ -170,3 +195,7 @@ def iterateNumberwise(iterable, n=2):
 def iterateWithWindow(iterable, windowSize=2):
     for i in range(len(iterable) - windowSize + 1):
         yield iterable[i : i + windowSize]
+
+
+def truncateToZeroOneOrminuesOne(self, x):
+    return (2 * (x > 0) - 1) * abs(x != 0)
