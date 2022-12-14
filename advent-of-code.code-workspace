@@ -7,8 +7,8 @@
   "settings": {
     "python.terminal.activateEnvironment": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
-    "python.pythonPath": ".\\Scripts\\python.exe",
     "python.analysis.autoImportCompletions": false,
+    "python.defaultInterpreterPath": ".\\Scripts\\python.exe",
     "python.linting.pycodestylePath": ".\\Scripts\\pep8.exe",
     "python.linting.pycodestyleArgs": [
       "--ignore=E402,E501,W503,E701"

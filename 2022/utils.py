@@ -1,7 +1,9 @@
 from collections import defaultdict
-import re
 from typing import List, Any
 from enum import Enum
+from copy import deepcopy
+
+ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 
 class Point:
@@ -55,8 +57,9 @@ class Map:
     def __init__(self, datas) -> None:
         self.pointIterator: List[Point] = None
         self.map: List[List[any]] = None
+        self.datas = datas
         self.fillMap(datas)
-        self.dataType = int
+        self.dataType = type(datas[0][0])
 
     def __iter__(self):
         return iter(self.pointIterator)
@@ -145,6 +148,12 @@ class Map:
                 points.append(Point(len(self.map[0]) - 1, i))
         return points
 
+    def createPointsByDataValues(self):
+        pointByDataValue = defaultdict(list)
+        for point in self:
+            pointByDataValue[self.get(point)].append(point)
+        return pointByDataValue
+
     def printMap(self, visiblePoints=None, reverse=False):
         visiblePoints = visiblePoints or self.pointIterator
         print("")
@@ -163,29 +172,65 @@ class Map:
         print("")
 
 
-class Grid:
-    def __init__(self, gridData) -> None:
-        self.map = gridData
-        self.max = Point(*map(max, zip(*self.map.keys())))
+class ConsoleColorMap(Map):
 
-    def neighbours(self, point, adjacency=4, wrap=False, stride=1):
-        allNeighbours = []
-        for i in range(-stride, stride + 1):
-            for j in range(-stride, stride + 1):
-                if i == 0 and j == 0:
-                    continue
-                if adjacency == 4 and (i != 0 and j != 0):
-                    continue
-                newPoint = Point(point.x + i, point.y + j)
+    """https://stackoverflow.com/a/21786287"""
 
-                if wrap:
-                    newPoint.x = newPoint.x % self.max.x
-                    newPoint.y = newPoint.y % self.max.y
+    class Colors:
+        HEADER = "\x1b[95m"
+        RED = "\x1b[0;31;40m"
+        GREEN = "\x1b[0;32;40m"
+        YELLOW = "\x1b[0;33;40m"
+        BLUE = "\x1b[0;34;40m"
+        PURPLE = "\x1b[0;35;40m"
+        CYAN = "\x1b[0;36;40m"
+        ENDC = "\x1b[0m"
+        BOLD = "\x1b[1m"
+        UNDERLINE = "\x1b[4m"
 
-                if newPoint in self.map:
-                    allNeighbours.append(newPoint)
+    def __init__(self, parentMap: Map) -> None:
+        super().__init__(deepcopy(parentMap.datas))
+        self.parentMap = parentMap
+        self.globalStyle = ""
+        self.dataType = str
+        self.resetColors()
 
-        return allNeighbours
+    def resetColors(self):
+        for point in self.pointIterator:
+            self.edit(point, "")
+
+    def display(self):
+        lines = [""]
+        currentLine = 0
+        for point in self.parentMap.pointIterator:
+            if point.y != currentLine:
+                currentLine += 1
+                lines.append("")
+
+            style = self.get(point) or self.globalStyle
+            char = str(self.parentMap.get(point))
+            if style:
+                char = style + char + self.Colors.ENDC
+            lines[-1] += char
+
+        for line in lines:
+            print(line)
+
+    def testColors(self):
+        for color in [
+            self.Colors.BLUE,
+            self.Colors.RED,
+            self.Colors.BOLD,
+            self.Colors.YELLOW,
+            self.Colors.CYAN,
+            self.Colors.GREEN,
+            self.Colors.PURPLE,
+            self.Colors.UNDERLINE,
+            self.Colors.HEADER,
+        ]:
+            self.globalStyle = color
+            self.display()
+        self.globalStyle = ""
 
 
 def iterateNumberwise(iterable, n=2):
