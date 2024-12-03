@@ -8,13 +8,11 @@ with open(inputPath, "r") as inputFile:
     raw = inputFile.read()
 
 
-def answer(iterable, topAmount):
-    elfCalories = [sum([int(food) for food in elf.split("\n")]) for elf in iterable.split("\n\n")]
-    maxCalories = sum(sorted(elfCalories, reverse=True)[: topAmount])
-    return maxCalories
+def answer(iterable):
+    return
 
-print(answer(raw, 1))
-print(answer(raw, 3))
+print(answer(raw))
+print(answer(raw))
 """
 
 DIR = os.path.dirname(__file__)
