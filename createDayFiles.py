@@ -21,7 +21,7 @@ year = "2024"
 if not os.path.isdir(os.path.join(DIR, year)):
     os.makedirs(os.path.join(DIR, year))
 
-days = os.listdir(year)
+days = [day for day in os.listdir(year) if day.startswith("day-")]
 newDay = len(days) + 1
 newDayStr = "day-%s" % newDay
 
